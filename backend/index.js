@@ -12,10 +12,22 @@ const bitacoraRoutes = require('./src/bitacora');
 
 const app = express();
 
-// Middlewares globales
 // Lista de orígenes permitidos
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://controlmerma.onrender.com' // Tu URL de frontend en Render
+];
+
 app.use(cors({
-    origin: 'http://localhost:5173', // puerto donde corre el react
+    origin: function (origin, callback) {
+        // Permitir peticiones sin origen (como Postman o apps móviles) 
+        // o si el origen está en la lista blanca
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('No permitido por CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
