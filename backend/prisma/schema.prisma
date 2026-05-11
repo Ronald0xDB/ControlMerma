@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id             Int                    @id @default(autoincrement())
+  nombre_completo String
+  usuario        String                 @unique
+  correo         String                 @unique
+  password_hash  String
+  rol            String                 // "admin" o "normal"
+  
+  // Relaciones
+  mermas         ControlMerma[]
+  recuperaciones RecuperacionPassword[]
+  bitacoras      BitacoraSistema[]      // NUEVO: Relación hacia la bitácora
+
+  @@map("usuarios") 
+}
+
+model Categoria {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @unique
+  productos Producto[]
+
+  @@map("categorias")
+}
+
+model Producto {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  categoria    Categoria      @relation(fields: [id_categoria], references: [id])
+  id_categoria Int
+  activo       Boolean        @default(true)
+  mermas       ControlMerma[]
+
+  @@map("productos")
+}
+
+model ControlMerma {
+  id               Int      @id @default(autoincrement())
+  producto         Producto @relation(fields: [id_producto], references: [id])
+  id_usuario       Int
+  usuario          Usuario  @relation(fields: [id_usuario], references: [id])
+  id_producto      Int
+  
+  // OPTIMIZADO: Precisión de 10 dígitos totales, 2 decimales
+  inventario_inicial Decimal  @db.Decimal(10, 2)
+  inventario_final   Decimal  @db.Decimal(10, 2)
+  merma_calculada    Decimal  @db.Decimal(10, 2)
+  
+  causa            String   
+  fecha_registro   DateTime @default(now())
+
+  @@map("control_mermas")
+}
+
+model RecuperacionPassword {
+  id               Int      @id @default(autoincrement())
+  usuario          Usuario  @relation(fields: [id_usuario], references: [id], onDelete: Cascade)
+  id_usuario       Int
+  token            String   @unique
+  usado            Boolean  @default(false)
+  fecha_solicitud  DateTime @default(now())
+  fecha_expiracion DateTime 
+
+  @@map("recuperacion_password")
+}
+
+model BitacoraSistema {
+  id             Int      @id @default(autoincrement())
+  usuario        Usuario  @relation(fields: [id_usuario], references: [id])
+  id_usuario     Int
+  accion         String   // Ej: "CREAR", "ACTUALIZAR", "ELIMINAR", "LOGIN"
+  tabla_afectada String   // Ej: "productos", "usuarios", "categorias"
+  detalles       Json?    // 
+  fecha_hora     DateTime @default(now())
+
+  @@map("bitacora_sistema")
+}
