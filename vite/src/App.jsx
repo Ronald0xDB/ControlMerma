@@ -4,7 +4,8 @@ import Login from './components/Login';
 import FormularioMerma from './components/FormularioMerma';
 import DashboardAdmin from './components/DashboardAdmin';
 import logoEmpresa from './assets/logo.png'; 
-
+// 1. IMPORTAMOS SONNER
+import { Toaster } from 'sonner';
 
 const visxColors = {
   bg: '#ecf4f3',
@@ -28,7 +29,7 @@ function App() {
   const cerrarSesion = () => {
     localStorage.removeItem('token'); 
     localStorage.removeItem('usuario'); 
-    localStorage.removeItem('usuario_id'); // Limpiar también el ID directo
+    localStorage.removeItem('usuario_id'); 
     setUsuarioActivo(null); 
   };
 
@@ -36,7 +37,6 @@ function App() {
     return <Login onLoginExitoso={manejarLogin} />;
   }
 
-  // Helper para sacar iniciales del nombre (Ej. "Ronald Yair" -> "RY")
   const obtenerIniciales = (nombre) => {
     if (!nombre) return "U";
     const partes = nombre.trim().split(" ");
@@ -47,32 +47,28 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-[#fcfcfc]">
       
-      {/* =========================================
-          BARRA DE NAVEGACIÓN SUPERIOR (Sticky Header)
-          ========================================= */}
+
+      {/* personalizacion del mensaje*/}
+      <Toaster position="top-right" richColors expand={true} />
+
       <div className="w-full bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 px-4 py-3">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           
-          {/* LOGO Y MARCA */}
           <div className="flex items-center gap-3">
             <img 
               src={logoEmpresa} 
               alt="Logo Empresa" 
               className="h-10 w-auto " 
-              onError={(e) => e.target.style.display = 'none'} // Por si no encuentra la ruta
+              onError={(e) => e.target.style.display = 'none'} 
             />
             <h1 className="text-2xl font-black tracking-tight" style={{ color: visxColors.strokeDark }}>
               Control<span style={{ color: visxColors.base }}>Merma</span>
             </h1>
           </div>
           
-          {/* PERFIL DE USUARIO */}
           <div className="flex items-center gap-4">
-            
-            {/* Textos: Nombre y Rol (Oculto en pantallas muy pequeñas) */}
             <div className="hidden sm:flex flex-col items-end">
               <span className="text-sm font-bold text-gray-800 leading-tight">
-                {/* SOLUCIÓN AL BUG: Era nombre_completo, no nombre */}
                 {usuarioActivo.nombre_completo}
               </span>
               <span className="text-xs font-bold uppercase tracking-wider" style={{ color: visxColors.strokeLight }}>
@@ -80,7 +76,6 @@ function App() {
               </span>
             </div>
 
-            {/* Avatar Circular con Iniciales */}
             <div 
               className="w-10 h-10 rounded-full flex items-center justify-center font-black text-white shadow-sm"
               style={{ backgroundColor: visxColors.strokeLight }}
@@ -88,10 +83,8 @@ function App() {
               {obtenerIniciales(usuarioActivo.nombre_completo)}
             </div>
 
-            {/* Línea divisoria */}
             <div className="h-8 w-px bg-gray-200 mx-1"></div>
 
-            {/* Botón de Cerrar Sesión con Ícono */}
             <button 
               onClick={cerrarSesion}
               className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-red-500 transition-colors px-2 py-1 rounded-lg hover:bg-red-50"
@@ -107,9 +100,6 @@ function App() {
         </div>
       </div>
 
-      {/* =========================================
-           (Formulario o Dashboard)
-          ========================================= */}
       <div className="w-full max-w-7xl flex-1 flex flex-col pt-4">
         {usuarioActivo.rol === 'normal' ? (
           <FormularioMerma />

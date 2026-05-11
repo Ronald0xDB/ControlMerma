@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 // Paleta de colores para mantener el diseño limpio
 const visxColors = {
@@ -68,19 +69,21 @@ export default function FormularioMerma() {
     e.preventDefault();
 
     if (mermaCalculada < 0) {
-      alert("Error: El inventario final no puede ser mayor al inicial.");
-      return;
+      toast.warning('Inventario Atípico', {
+        description: `Se detectó un excedente de ${Math.abs(mermaCalculada).toFixed(2)} unidades. ¿Revisaste bien el conteo físico?`,
+        duration: 6000,
+      });
     }
 
     if (mermaCalculada > 0 && causa.trim() === '') {
-      alert("Por favor, ingresa una descripción de la causa de la merma.");
+      toast.error("Por favor, ingresa una descripción de la causa de la merma.");
       return;
     }
 
     const idUsuarioLogueado = localStorage.getItem('usuario_id');
 
     if (!idUsuarioLogueado) {
-      alert("Error: No has iniciado sesión o tu sesión expiró.");
+      toast.error("Error: No has iniciado sesión o tu sesión expiró.");
       return;
     }
 
@@ -101,7 +104,7 @@ export default function FormularioMerma() {
       });
 
       if (respuesta.ok) {
-        alert("¡Transacción registrada correctamente!");
+        toast.success("¡Transacción registrada correctamente!");
         setProducto('');
         setInicial('');
         setFinal('');
@@ -112,11 +115,11 @@ export default function FormularioMerma() {
         actualizarHistorial();
       } else {
         const errorData = await respuesta.json();
-        alert(`❌ Error al guardar: ${errorData.error || 'Problema en el servidor'}`);
+        toast.error(` Error al guardar: ${errorData.error || 'Problema en el servidor'}`);
       }
     } catch (error) {
       console.error("Error en la petición:", error);
-      alert("❌ No se pudo conectar con el backend. ¿Está encendido Node.js?");
+      toast.error(" No se pudo conectar con el backend. ¿Está encendido Node.js?");
     }
   };
 

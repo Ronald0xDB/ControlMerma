@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area,
@@ -218,7 +219,7 @@ export default function DashboardAdmin() {
     if (res.ok) {
       const nuevaCat = await res.json(); // <-- Lo extraemos primero
       setListaCategorias(prev => [...prev, nuevaCat]); // <-- Lo guardamos después
-      alert('Categoría creada');
+      toast.success('¡Categoria creada exitosamente!')
       e.target.reset();
     }
   };
@@ -269,15 +270,47 @@ export default function DashboardAdmin() {
   };
 
   const alternarEstadoProducto = async (id) => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/productos/${id}/estado`, { method: 'PATCH' });
-    if (res.ok) { const prodActualizado = await res.json(); setListaProductos(prev => prev.map(p => p.id === prodActualizado.id ? prodActualizado : p)); }
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/productos/${id}/estado`, {
+        method: 'PATCH'
+      });
+
+      if (res.ok) {
+        const prodActualizado = await res.json();
+
+        // El mensaje cambia dinámicamente según el nuevo estado
+        if (prodActualizado.activo) {
+          toast.success('¡Producto activado!', {
+            description: `${prodActualizado.nombre} ahora es visible en el formulario.`
+          });
+        } else {
+          toast.success('Producto oculto', {
+            description: `${prodActualizado.nombre} ya no aparecerá en la lista de mermas.`
+          });
+        }
+
+        setListaProductos(prev =>
+          prev.map(p => p.id === prodActualizado.id ? prodActualizado : p)
+        );
+      } else {
+        toast.error('No se pudo cambiar el estado');
+      }
+    } catch (err) {
+      toast.error('Error de red', {
+        description: 'No se pudo conectar con el servidor. Revisa tu internet.'
+      });
+      console.error("Detalle del error:", err);
+    }
   };
 
   const crearUsuario = async (e) => {
     e.preventDefault();
 
     if (!passwordValida) {
-      alert('⚠️ Por favor, cumple con todos los requisitos de seguridad.');
+      toast.error('Seguridad insuficiente', {
+        description: 'Por favor, cumple con todos los requisitos de la contraseña.',
+        duration: 4000,
+      });
       return;
     }
 
@@ -299,17 +332,17 @@ export default function DashboardAdmin() {
       const data = await res.json();
 
       if (res.ok) {
-        alert('Usuario creado exitosamente');
+        toast.success('Usuario creado exitosamente')
         setListaUsuarios(prev => [...prev, data]);
         e.target.reset();
         setPassword(''); // Limpiamos el estado
       } else {
         const msg = data.errores ? data.errores.map(err => `• ${err.msg}`).join('\n') : (data.error || 'Error');
-        alert('⚠️ Error:\n' + msg);
+        toast.error(' Error:\n' + msg);
       }
     } catch (error) {
       console.error("Error detallado:", error); // <-- Al usarlo aquí, el error desaparece
-      alert('🚀 Error de conexión');
+      toast.error('Error de conexión');
     }
   };
   const eliminarUsuario = async (id) => {
@@ -318,18 +351,18 @@ export default function DashboardAdmin() {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/${id}`, { method: 'DELETE' });
 
     if (res.ok) {
-      alert('Usuario eliminado correctamente.')
+      toast.success('Usuario eliminado correctamente.')
       setListaUsuarios(prev => prev.filter(u => u.id !== id));
     } else {
       const data = await res.json(); // ← lee el mensaje del backend
-      alert(`⚠️ ${data.error}`);    // ← muestra el motivo real
+      toast.error(` ${data.error}`);    // ← muestra el motivo real
     }
   };
 
   const actualizarUsuario = async (e) => {
     e.preventDefault();
     if (!passwordValida && password.length > 0) {
-      alert('⚠️ La contraseña no cumple los requisitos.');
+      toast.error('⚠️ La contraseña no cumple los requisitos.');
       return;
     }
     const formData = {
@@ -351,7 +384,7 @@ export default function DashboardAdmin() {
       setUsuarioEditando(null);
       setPassword('');
       e.target.reset();
-      alert(' Usuario actualizado');
+      toast.success(' Usuario actualizado');
     }
   };
 
