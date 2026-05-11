@@ -49,7 +49,7 @@ function App() {
       
 
       {/* personalizacion del mensaje*/}
-      <Toaster position="top-right" richColors expand={true} />
+      <Toaster position="top-center" richColors expand={true} />
 
       <div className="w-full bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50 px-4 py-3">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
