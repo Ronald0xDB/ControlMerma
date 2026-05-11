@@ -55,7 +55,7 @@ export default function Login({ onLoginExitoso }) {
     setCargando(true);
 
     try {
-      const respuesta = await fetch('http://localhost:3001/api/usuarios/login', {
+      const respuesta = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, password })
@@ -85,7 +85,7 @@ export default function Login({ onLoginExitoso }) {
     setCargando(true);
 
     try {
-      const res = await fetch('http://localhost:3001/api/usuarios/forgot-password', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario: recuperarEmail })
@@ -114,7 +114,7 @@ export default function Login({ onLoginExitoso }) {
     setCargando(true);
 
     try {
-      const res = await fetch('http://localhost:3001/api/usuarios/reset-password', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: tokenIngresado, nuevaPassword })
@@ -140,9 +140,7 @@ export default function Login({ onLoginExitoso }) {
     }
   };
 
-  // ==========================================
-  // RENDERIZADO CONDICIONAL DE VISTAS
-  // ==========================================
+ 
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: visxColors.bg }}>

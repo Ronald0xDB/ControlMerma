@@ -108,7 +108,7 @@ function App() {
       </div>
 
       {/* =========================================
-          CONTENIDO DINÁMICO (Formulario o Dashboard)
+           (Formulario o Dashboard)
           ========================================= */}
       <div className="w-full max-w-7xl flex-1 flex flex-col pt-4">
         {usuarioActivo.rol === 'normal' ? (

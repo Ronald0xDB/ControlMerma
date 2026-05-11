@@ -134,10 +134,10 @@ export default function DashboardAdmin() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const resMermas = await fetch('http://localhost:3001/api/mermas');
-        const resCategorias = await fetch('http://localhost:3001/api/categorias');
-        const resProductos = await fetch('http://localhost:3001/api/productos');
-        const resBitacora = await fetch('http://localhost:3001/api/bitacora');
+        const resMermas = await fetch(`${import.meta.env.VITE_API_URL}/api/mermas`);
+        const resCategorias = await fetch(`${import.meta.env.VITE_API_URL}/api/categorias`);
+        const resProductos = await fetch(`${import.meta.env.VITE_API_URL}/api/productos`);
+        const resBitacora = await fetch(`${import.meta.env.VITE_API_URL}/api/bitacora`);
         if (resBitacora.ok) setBitacora(await resBitacora.json());
 
         if (resMermas.ok) {
@@ -152,7 +152,7 @@ export default function DashboardAdmin() {
       } finally {
         setCargando(false);
       }
-      const resUsuarios = await fetch('http://localhost:3001/api/usuarios');
+      const resUsuarios = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios`);
       if (resUsuarios.ok) setListaUsuarios(await resUsuarios.json());
     };
     cargarDatos();
@@ -212,7 +212,7 @@ export default function DashboardAdmin() {
   // --- FUNCIONES PARA GUARDADO REAL EN NODE.JS ---
   const crearCategoria = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3001/api/categorias', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/categorias`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre: e.target.nombreCat.value })
     });
     if (res.ok) {
@@ -225,13 +225,13 @@ export default function DashboardAdmin() {
 
   const eliminarCategoria = async (id) => {
     if (!window.confirm('¿Seguro que deseas eliminar esta categoría?')) return;
-    const res = await fetch(`http://localhost:3001/api/categorias/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/categorias/${id}`, { method: 'DELETE' });
     if (res.ok) { setListaCategorias(prev => prev.filter(cat => cat.id !== id)); }
   };
 
   const actualizarCategoria = async (e) => {
     e.preventDefault();
-    const res = await fetch(`http://localhost:3001/api/categorias/${categoriaEditando.id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/categorias/${categoriaEditando.id}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre: e.target.nombreCat.value })
     });
     if (res.ok) {
@@ -247,7 +247,7 @@ export default function DashboardAdmin() {
     const datosFormulario = { nombre: e.target.nombreProd.value, id_categoria: parseInt(e.target.categoriaProd.value) };
 
     if (productoEditando) {
-      const res = await fetch(`http://localhost:3001/api/productos/${productoEditando.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/productos/${productoEditando.id}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datosFormulario)
       });
       if (res.ok) {
@@ -257,7 +257,7 @@ export default function DashboardAdmin() {
         e.target.reset();
       }
     } else {
-      const res = await fetch('http://localhost:3001/api/productos', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/productos`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(datosFormulario)
       });
       if (res.ok) {
@@ -269,7 +269,7 @@ export default function DashboardAdmin() {
   };
 
   const alternarEstadoProducto = async (id) => {
-    const res = await fetch(`http://localhost:3001/api/productos/${id}/estado`, { method: 'PATCH' });
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/productos/${id}/estado`, { method: 'PATCH' });
     if (res.ok) { const prodActualizado = await res.json(); setListaProductos(prev => prev.map(p => p.id === prodActualizado.id ? prodActualizado : p)); }
   };
 
@@ -290,7 +290,7 @@ export default function DashboardAdmin() {
     };
 
     try {
-      const res = await fetch('http://localhost:3001/api/usuarios', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -315,7 +315,7 @@ export default function DashboardAdmin() {
   const eliminarUsuario = async (id) => {
     if (!window.confirm('¿Eliminar este usuario?')) return;
 
-    const res = await fetch(`http://localhost:3001/api/usuarios/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/${id}`, { method: 'DELETE' });
 
     if (res.ok) {
       alert('Usuario eliminado correctamente.')
@@ -339,7 +339,7 @@ export default function DashboardAdmin() {
       rol: e.target.rol.value,
       ...(password.length > 0 && { password })
     };
-    const res = await fetch(`http://localhost:3001/api/usuarios/${usuarioEditando.id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios/${usuarioEditando.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)

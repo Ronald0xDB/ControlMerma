@@ -29,7 +29,7 @@ export default function FormularioMerma() {
     if (!idUsuarioLogueado) return; 
 
     try {
-      const res = await fetch(`http://localhost:3001/api/mermas?id_usuario=${idUsuarioLogueado}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/mermas?id_usuario=${idUsuarioLogueado}`);
       if (res.ok) setMisMermas(await res.json());
     } catch (error) {
       console.error("Error al recargar historial:", error);
@@ -41,7 +41,7 @@ export default function FormularioMerma() {
     const cargarDatosIniciales = async () => {
       // A. Cargar lista de licores para el selector
       try {
-        const resProd = await fetch('http://localhost:3001/api/productos/activos');
+        const resProd = await fetch(`${import.meta.env.VITE_API_URL}/api/productos/activos`);
         if (resProd.ok) setListaProductos(await resProd.json());
       } catch (error) {
         console.error("Error cargando productos:", error);
@@ -51,7 +51,7 @@ export default function FormularioMerma() {
       const idUsuario = localStorage.getItem('usuario_id');
       if (idUsuario) {
         try {
-          const resMermas = await fetch(`http://localhost:3001/api/mermas?id_usuario=${idUsuario}`);
+          const resMermas = await fetch(`${import.meta.env.VITE_API_URL}/api/mermas?id_usuario=${idUsuario}`);
           if (resMermas.ok) setMisMermas(await resMermas.json());
         } catch (error) {
           console.error("Error cargando historial inicial:", error);
@@ -94,7 +94,7 @@ export default function FormularioMerma() {
     };
 
     try {
-      const respuesta = await fetch('http://localhost:3001/api/mermas', {
+      const respuesta = await fetch(`${import.meta.env.VITE_API_URL}/api/mermas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datosParaBackend)
