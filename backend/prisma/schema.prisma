@@ -44,7 +44,7 @@ model Producto {
 
 model ControlMerma {
   id               Int      @id @default(autoincrement())
-  producto         Producto @relation(fields: [id_producto], references: [id])
+  producto         Producto @relation(fields: [id_producto], references: [id], onDelete:Cascade)
   id_usuario       Int
   usuario          Usuario  @relation(fields: [id_usuario], references: [id])
   id_producto      Int

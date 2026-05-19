@@ -302,6 +302,18 @@ export default function DashboardAdmin() {
       console.error("Detalle del error:", err);
     }
   };
+  const eliminarProducto = async (id) => {
+    if (!window.confirm('¿Eliminar este producto permanentemente? Esta acción no se puede deshacer.')) return;
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/productos/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      toast.success('Producto eliminado.');
+      setListaProductos(prev => prev.filter(p => p.id !== id));
+    } else {
+      const data = await res.json();
+      toast.error(data.error);
+    }
+  };
+
 
   const crearUsuario = async (e) => {
     e.preventDefault();
@@ -656,6 +668,7 @@ export default function DashboardAdmin() {
                     <div style={{ display: 'flex', gap: 12 }}>
                       <button onClick={() => setProductoEditando(prod)} style={{ background: 'none', border: 'none', color: visxColors.strokeDark, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>Editar</button>
                       <button onClick={() => alternarEstadoProducto(prod.id)} style={{ background: 'none', border: 'none', color: prod.activo ? visxColors.orange : visxColors.strokeDark, fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>{prod.activo ? 'Ocultar' : 'Activar'}</button>
+                      <button onClick={() => eliminarProducto(prod.id)} style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>Borrar</button>
                     </div>
                   </li>
                 ))}
