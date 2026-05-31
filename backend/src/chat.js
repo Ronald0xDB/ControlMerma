@@ -27,7 +27,7 @@ router.post('/preguntar', async (req, res) => {
     const datosContexto = JSON.stringify(ultimasMermas);
 
     // 2. Instrucciones para la IA
-    const modelo = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const modelo = genAI.getGenerativeModel({ model: "gemini-pro" });
     
     const prompt = `
       Eres el Asistente Analítico de IA del sistema ControlMerma para "Licores de Guatemala".
