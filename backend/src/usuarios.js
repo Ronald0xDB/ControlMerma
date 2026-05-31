@@ -136,23 +136,38 @@ router.put('/:id', [
   }
 });
 
+//Eliminar usuario
 // ==========================================
 // 5. DELETE: Eliminar usuario
 // ==========================================
 router.delete('/:id', async (req, res) => {
   try {
-    await registrarBitacora(parseInt(req.params.id), 'ELIMINAR', 'usuarios', { id_eliminado: parseInt(req.params.id) });
-    await prisma.usuario.delete({ where: { id: parseInt(req.params.id) } });
+    const idUsuarioBorrar = parseInt(req.params.id);
+
+    // PASO 1: Limpiamos su rastro en la bitácora (su creación, sus logins, etc.)
+    await prisma.bitacoraSistema.deleteMany({
+      where: { id_usuario: idUsuarioBorrar }
+    });
+
+
+    await prisma.usuario.delete({ 
+      where: { id: idUsuarioBorrar } 
+    });
     
     res.json({ message: "Usuario eliminado con éxito" });
+
   } catch (error) {
-    // ← agrega este if
+    console.error("❌ ERROR AL ELIMINAR USUARIO:", error); 
+
+    // Si explota con error P2003 aquí, significa que falló por la tabla de MERMAS.
+    // ¡Y eso es bueno! Significa que el sistema protege el inventario.
     if (error.code === 'P2003') {
       return res.status(400).json({
-        error: "No se puede eliminar: el usuario tiene registros de mermas asociados."
+        error: "No se puede eliminar: este usuario ya registró mermas en el inventario."
       });
     }
-    res.status(500).json({ error: "Error al eliminar usuario." });
+    
+    res.status(500).json({ error: "Error interno del servidor al eliminar." });
   }
 });
 
@@ -172,7 +187,7 @@ router.post('/login', async (req, res) => {
       token: "token-temporal-jwt",
       usuario: { id: userDB.id, nombre_completo: userDB.nombre_completo, rol: userDB.rol }
     });
-    
+
   } catch (error) {
     res.status(500).json({ error: "Error en el servidor." });
   }
