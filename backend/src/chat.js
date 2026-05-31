@@ -73,10 +73,10 @@ router.post('/preguntar', async (req, res) => {
     const datosContexto = JSON.stringify(contextoGeneral);
 
     // 3. Instrucciones para la IA
-    const modelo = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const modelo = genAI.getGenerativeModel({ model: "Gemini 2.5 Flash" });
     
     const prompt = `
-      Eres el Asistente Analítico de IA del sistema LiquorFlow.
+      Eres el Asistente Analítico de IA del sistema ControlMerma.
       Tu objetivo es responder las preguntas del administrador basándote ÚNICAMENTE en estos datos del sistema:
       
       [DATOS DEL SISTEMA]:
