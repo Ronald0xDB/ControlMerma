@@ -7,7 +7,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 
-const { enviarReporteIA } = require('./mailer');
+const { enviarReporteIA } = require('./email');
 
 // Inicializamos Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
