@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 
@@ -8,6 +10,9 @@ const categoriasRoutes = require('./src/categorias');
 const usuariosRoutes = require('./src/usuarios');
 const authRoutes = require('./src/auth');
 const bitacoraRoutes = require('./src/bitacora');
+
+//Agente
+const chatRoutes = require('./src/chat');
 
 
 const app = express();
@@ -46,6 +51,10 @@ app.use('/api/bitacora', bitacoraRoutes);
 
 // Nota: He cambiado la ruta base para el login a /api/auth
 app.use('/api/auth', authRoutes); 
+
+
+//Agente 
+app.use('/api/chat', chatRoutes);
 
 // ==========================================
 // ARRANQUE DEL SERVIDOR

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import { Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
+import AgenteIA from './AgenteIA';
 
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area,
@@ -621,6 +622,7 @@ export default function DashboardAdmin() {
               </table>
             </div>
           </div>
+          <AgenteIA />
         </div>
       )}
 
