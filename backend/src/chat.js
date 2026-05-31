@@ -73,7 +73,7 @@ router.post('/preguntar', async (req, res) => {
     const datosContexto = JSON.stringify(contextoGeneral);
 
     // 3. Instrucciones para la IA
-    const modelo = genAI.getGenerativeModel({ model: "Gemini 2.5 Flash" });
+    const modelo = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     
     const prompt = `
       Eres el Asistente Analítico de IA del sistema ControlMerma.
