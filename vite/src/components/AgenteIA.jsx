@@ -1,5 +1,13 @@
 import { useState } from 'react';
 
+// Tu paleta oficial
+const visxColors = {
+  bg: '#ecf4f3',
+  strokeLight: '#68b0ab',
+  strokeDark: '#006a71',
+  orange: '#ff7e67'
+};
+
 export default function AgenteIA() {
   const [pregunta, setPregunta] = useState('');
   const [respuesta, setRespuesta] = useState('');
@@ -10,8 +18,9 @@ export default function AgenteIA() {
     if (!pregunta.trim()) return;
 
     setCargando(true);
-    setRespuesta('Analizando la base de datos de Licores de Guatemala...');
+    setRespuesta('Analizando la base de datos de LiquorFlow...');
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    
     try {
       const res = await fetch(`${API_URL}/api/chat/preguntar`, {
         method: 'POST',
@@ -27,26 +36,46 @@ export default function AgenteIA() {
         setRespuesta(`❌ Error: ${data.error}`);
       }
     } catch (error) {
-      console.error("Error detallado", error)
+      console.error("Error detallado", error);
+      setRespuesta('❌ Error de conexión. Verifica que el backend esté corriendo.');
     } finally {
       setCargando(false);
-      setPregunta(''); // Limpiamos el input
+      setPregunta('');
     }
   };
 
   return (
-    <div className="bg-[#111111] p-6 rounded-2xl border border-[#1e1e1e] mt-8 animate-fade-in">
+    <div 
+      className="p-6 rounded-2xl mt-8 animate-fade-in shadow-sm"
+      style={{ background: 'white', border: `1px solid ${visxColors.strokeLight}` }}
+    >
       <div className="flex items-center gap-2 mb-4">
         <span className="text-2xl">🤖</span>
-        <h3 className="font-bold text-[#e8e8e8] text-lg">Agente de Inteligencia de Negocios (IA)</h3>
+        <h3 
+          className="font-bold text-sm uppercase tracking-wide"
+          style={{ color: visxColors.strokeDark }}
+        >
+          Agente de Inteligencia de Negocios (IA)
+        </h3>
       </div>
       
       {/* Caja de respuesta */}
-      <div className="bg-[#080808] p-5 rounded-xl border border-[#1e1e1e] min-h-[120px] mb-4">
+      <div 
+        className="p-5 rounded-xl min-h-[120px] mb-4"
+        style={{ background: visxColors.bg, border: `1px solid ${visxColors.strokeLight}` }}
+      >
         {respuesta ? (
-          <p className="text-[#e8e8e8] whitespace-pre-wrap text-sm leading-relaxed">{respuesta}</p>
+          <p 
+            className="whitespace-pre-wrap text-sm leading-relaxed font-medium"
+            style={{ color: visxColors.strokeDark }}
+          >
+            {respuesta}
+          </p>
         ) : (
-          <p className="text-[#444] italic text-sm">
+          <p 
+            className="italic text-sm font-medium"
+            style={{ color: visxColors.strokeLight }}
+          >
             Hazme una pregunta sobre el inventario, mermas o rendimiento de los productos...
           </p>
         )}
@@ -59,13 +88,19 @@ export default function AgenteIA() {
           value={pregunta}
           onChange={(e) => setPregunta(e.target.value)}
           placeholder="Ej. ¿Qué licor tuvo la mayor pérdida registrada y por qué causa?" 
-          className="flex-1 bg-[#161616] border border-[#252525] rounded-lg p-3 text-[#e8e8e8] outline-none focus:border-[#8b5cf6] transition-colors text-sm"
+          className="flex-1 rounded-lg p-3 outline-none transition-colors text-sm font-medium"
+          style={{ 
+            background: 'white', 
+            border: `1px solid ${visxColors.strokeLight}`,
+            color: visxColors.strokeDark
+          }}
           disabled={cargando}
         />
         <button 
           type="submit" 
           disabled={cargando || !pregunta.trim()} 
-          className="bg-[#8b5cf6] hover:bg-[#7c3aed] text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:opacity-50 text-sm"
+          className="text-white px-6 py-3 rounded-lg font-bold transition-opacity disabled:opacity-50 text-sm shadow-sm"
+          style={{ background: visxColors.orange }}
         >
           {cargando ? 'Procesando...' : 'Preguntar'}
         </button>

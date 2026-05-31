@@ -18,8 +18,7 @@ router.post('/preguntar', async (req, res) => {
     }
 
     // 1. Extraemos los datos para la IA
-    // Ajusta 'prisma.controlMermas' al nombre de tu tabla en schema.prisma
-    const ultimasMermas = await prisma.controlMermas.findMany({
+    const ultimasMermas = await prisma.controlMerma.findMany({
       include: { producto: true },
       orderBy: { fecha_registro: 'desc' },
       take: 30
