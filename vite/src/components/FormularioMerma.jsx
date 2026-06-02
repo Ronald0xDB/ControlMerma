@@ -75,10 +75,6 @@ export default function FormularioMerma() {
       });
     }
 
-    if (mermaCalculada > 0 && causa.trim() === '') {
-      toast.error("Por favor, ingresa una descripción de la causa de la merma.");
-      return;
-    }
 
     const idUsuarioLogueado = localStorage.getItem('usuario_id');
 
@@ -180,7 +176,7 @@ export default function FormularioMerma() {
               <div className="animate-fade-in">
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: visxColors.strokeDark, marginBottom: '8px' }}>Causa de la pérdida <span style={{ color: visxColors.orange }}>*</span></label>
                 <textarea 
-                  required rows="2" 
+                   rows="2" 
                   value={causa} onChange={(e) => setCausa(e.target.value)} placeholder="Ej. Botella rota en bodega, degustación, etc."
                   style={{ width: '100%', border: `1px solid ${visxColors.strokeLight}`, borderRadius: '8px', padding: '10px 14px', outline: 'none', background: '#fff', color: visxColors.strokeDark, resize: 'none' }} 
                 />
