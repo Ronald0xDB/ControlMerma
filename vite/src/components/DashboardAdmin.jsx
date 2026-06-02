@@ -39,8 +39,6 @@ const Regla = ({ cumplida, texto }) => (
 
 
 
-// Paleta cálida para el gráfico de Anillo
-const donutColors = [visxColors.strokeDark, visxColors.orange, visxColors.strokeLight, '#b59a85', '#8c7662'];
 
 /* ─── TOOLTIPS PERSONALIZADOS ─── */
 const DonutTooltip = ({ active, payload }) => {
@@ -204,10 +202,7 @@ export default function DashboardAdmin() {
   }, {});
   const datosMensuales = Object.keys(mermasMensualesObj).map(m => ({ mes: m, litros: mermasMensualesObj[m] }));
 
-  const datosTopProductos = Object.keys(mermasPorProductoObj)
-    .map(key => ({ producto: key, merma: mermasPorProductoObj[key] }))
-    .sort((a, b) => b.merma - a.merma)
-    .slice(0, 5);
+
 
 
   // --- FUNCIONES PARA GUARDADO REAL EN NODE.JS ---
@@ -552,23 +547,48 @@ export default function DashboardAdmin() {
               </div>
             </div>
 
-            {/* 4. Gráfica TOP PRODUCTOS */}
+            {/* 4. Gráfica LITROS PROCESADOS / PRODUCIDOS */}
             <div style={{ background: visxColors.bg, border: `1px solid ${visxColors.strokeLight}`, borderRadius: 16, padding: 20, display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: visxColors.orange }} />
-                <span style={{ fontSize: 12, color: visxColors.strokeDark, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Licores Mayor Pérdida (Top 5)</span>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: visxColors.strokeDark }} />
+                <span style={{ fontSize: 12, color: visxColors.strokeDark, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                  Litros Producidos (Últimos 7 Días)
+                </span>
               </div>
+
               <div style={{ width: '100%', flex: 1, minHeight: 260 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                    <Pie data={datosTopProductos} dataKey="merma" nameKey="producto" cx="50%" cy="45%" innerRadius={60} outerRadius={85} paddingAngle={3} stroke="none">
-                      {datosTopProductos.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={donutColors[index % donutColors.length]} />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip content={<DonutTooltip />} />
-                    <Legend verticalAlign="bottom" height={36} iconType="circle" formatter={(value) => <span style={{ color: visxColors.strokeDark, fontSize: 11, fontWeight: 600 }}>{value}</span>} />
-                  </PieChart>
+                  {/* AQUÍ ESTÁ LA MAGIA: Usamos tu variable datosDiarios real */}
+                  <BarChart data={datosDiarios} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#d1e3e2" />
+
+                    <XAxis
+                      dataKey="fecha"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: visxColors.strokeLight, fontSize: 12, fontWeight: 500 }}
+                      dy={10}
+                    />
+
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: visxColors.strokeLight, fontSize: 12, fontWeight: 500 }}
+                    />
+
+                    <RechartsTooltip
+                      cursor={{ fill: '#e0eceb' }}
+                      contentStyle={{ borderRadius: '8px', border: `1px solid ${visxColors.strokeLight}`, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
+                    />
+
+                    <Bar
+                      dataKey="litros"
+                      name="Litros"
+                      fill={visxColors.strokeDark}
+                      radius={[4, 4, 0, 0]}
+                      barSize={32}
+                    />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
