@@ -93,7 +93,7 @@ export default function FormularioMerma() {
       inicial: parseFloat(inicial),
       final: parseFloat(final),
       merma: mermaCalculada,
-      causa: causa || "Sin pérdida"
+      causa: causa || undefined
     };
 
     try {
@@ -110,7 +110,7 @@ export default function FormularioMerma() {
         setFinal('');
         setCausa('');
         
-        // ¡MAGIA! Recargamos el historial instantáneamente para que el usuario vea su registro
+        
 
         actualizarHistorial();
       } else {

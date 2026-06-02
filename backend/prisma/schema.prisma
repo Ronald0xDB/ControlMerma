@@ -54,7 +54,7 @@ model ControlMerma {
   inventario_final   Decimal  @db.Decimal(10, 2)
   merma_calculada    Decimal  @db.Decimal(10, 2)
   
-  causa            String   
+  causa            String   @default("No especificada")
   fecha_registro   DateTime @default(now())
 
   @@map("control_mermas")
