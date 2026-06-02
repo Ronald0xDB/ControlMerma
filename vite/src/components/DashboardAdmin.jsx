@@ -161,15 +161,26 @@ export default function DashboardAdmin() {
   // ==========================================
   // LÓGICA DE NEGOCIO Y ETL
   // ==========================================
+// ==========================================
+  // LÓGICA DE NEGOCIO Y ETL (CORREGIDA AL 100%)
+  // ==========================================
 
   const historialCronologico = [...historialMermas].sort((a, b) => new Date(a.fecha_registro) - new Date(b.fecha_registro));
   const historialReciente = [...historialMermas].sort((a, b) => new Date(b.fecha_registro) - new Date(a.fecha_registro));
 
-  const totalMermas = historialMermas.reduce((acc, curr) => acc + parseFloat(curr.merma_calculada || 0), 0);
+  // 1. TOTAL DE MERMAS (Solo suma las pérdidas reales)
+  const totalMermas = historialMermas.reduce((acc, curr) => {
+    const merma = parseFloat(curr.merma_calculada || 0);
+    return merma > 0 ? acc + merma : acc;
+  }, 0);
 
+  // 2. PRODUCTO MÁS AFECTADO (Top Mermas)
   const mermasPorProductoObj = historialMermas.reduce((acc, curr) => {
-    const nombre = curr.producto?.nombre || 'Desconocido';
-    acc[nombre] = (acc[nombre] || 0) + parseFloat(curr.merma_calculada || 0);
+    const merma = parseFloat(curr.merma_calculada || 0);
+    if (merma > 0) {
+      const nombre = curr.producto?.nombre || 'Desconocido';
+      acc[nombre] = (acc[nombre] || 0) + merma;
+    }
     return acc;
   }, {});
 
@@ -177,34 +188,56 @@ export default function DashboardAdmin() {
     ? Object.keys(mermasPorProductoObj).reduce((a, b) => mermasPorProductoObj[a] > mermasPorProductoObj[b] ? a : b)
     : 'N/A';
 
+
+
+  // 3. GRÁFICA 1: Tendencia Diaria de Mermas (Solo pérdidas)
   const mermasDiariasObj = historialCronologico.reduce((acc, curr) => {
-    const fecha = new Date(curr.fecha_registro).toLocaleDateString('es-GT', { day: '2-digit', month: 'short' });
-    acc[fecha] = (acc[fecha] || 0) + parseFloat(curr.merma_calculada || 0);
+    const merma = parseFloat(curr.merma_calculada || 0);
+    if (merma > 0) {
+      const fecha = new Date(curr.fecha_registro).toLocaleDateString('es-GT', { day: '2-digit', month: 'short' });
+      acc[fecha] = (acc[fecha] || 0) + merma;
+    }
     return acc;
   }, {});
   const datosDiarios = Object.keys(mermasDiariasObj).map(f => ({ fecha: f, litros: mermasDiariasObj[f] })).slice(-7);
 
+  // 4. GRÁFICA 2: Tendencia Semanal de Mermas (Solo pérdidas)
   const mermasSemanalesObj = historialCronologico.reduce((acc, curr) => {
-    const d = new Date(curr.fecha_registro);
-    const inicioAnio = new Date(d.getFullYear(), 0, 1);
-    const semana = Math.ceil((((d - inicioAnio) / 86400000) + inicioAnio.getDay() + 1) / 7);
-    const label = `Sem ${semana}`;
-    acc[label] = (acc[label] || 0) + parseFloat(curr.merma_calculada || 0);
+    const merma = parseFloat(curr.merma_calculada || 0);
+    if (merma > 0) {
+      const d = new Date(curr.fecha_registro);
+      const inicioAnio = new Date(d.getFullYear(), 0, 1);
+      const semana = Math.ceil((((d - inicioAnio) / 86400000) + inicioAnio.getDay() + 1) / 7);
+      const label = `Sem ${semana}`;
+      acc[label] = (acc[label] || 0) + merma;
+    }
     return acc;
   }, {});
   const datosSemanales = Object.keys(mermasSemanalesObj).map(s => ({ semana: s, litros: mermasSemanalesObj[s] }));
 
+  // 5. GRÁFICA 3: Auditoría Mensual de Mermas (Solo pérdidas)
   const mermasMensualesObj = historialCronologico.reduce((acc, curr) => {
-    const mes = new Date(curr.fecha_registro).toLocaleDateString('es-GT', { month: 'long', year: 'numeric' });
-    const mesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
-    acc[mesCapitalizado] = (acc[mesCapitalizado] || 0) + parseFloat(curr.merma_calculada || 0);
+    const merma = parseFloat(curr.merma_calculada || 0);
+    if (merma > 0) {
+      const mes = new Date(curr.fecha_registro).toLocaleDateString('es-GT', { month: 'long', year: 'numeric' });
+      const mesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
+      acc[mesCapitalizado] = (acc[mesCapitalizado] || 0) + merma;
+    }
     return acc;
   }, {});
   const datosMensuales = Object.keys(mermasMensualesObj).map(m => ({ mes: m, litros: mermasMensualesObj[m] }));
 
-
-
-
+  // 6. NUEVO: GRÁFICA 4: Litros Producidos Reales (Inventario Final)
+  const litrosFinalesObj = historialCronologico.reduce((acc, curr) => {
+    const litros = parseFloat(curr.inventario_final || 0); 
+    const fecha = new Date(curr.fecha_registro).toLocaleDateString('es-GT', { day: '2-digit', month: 'short' });
+    acc[fecha] = (acc[fecha] || 0) + litros;
+    return acc;
+  }, {});
+  
+  const datosProduccion = Object.keys(litrosFinalesObj)
+    .map(f => ({ fecha: f, litros: litrosFinalesObj[f] }))
+    .slice(-7);
   // --- FUNCIONES PARA GUARDADO REAL EN NODE.JS ---
   // --- FUNCIONES PARA GUARDADO REAL EN NODE.JS ---
   const crearCategoria = async (e) => {
@@ -558,8 +591,8 @@ export default function DashboardAdmin() {
 
               <div style={{ width: '100%', flex: 1, minHeight: 260 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  {/* AQUÍ ESTÁ LA MAGIA: Usamos tu variable datosDiarios real */}
-                  <BarChart data={datosDiarios} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  {/* AQUÍ ESTÁ EL CAMBIO: Ahora usamos datosProduccion */}
+                  <BarChart data={datosProduccion} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#d1e3e2" />
 
                     <XAxis
